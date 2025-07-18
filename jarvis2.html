@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S AI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+      color: cyan;
+      overflow: hidden;
+      transition: background 0.5s, color 0.5s;
+    }
+    .dark-mode {
+      background: #000;
+      color: #00ffff;
+    }
+    .jarvis-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 48px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { text-shadow: 0 0 5px #00ffff; }
+      100% { text-shadow: 0 0 20px #00ffff; }
+    }
+    #output {
+      width: 80%;
+      min-height: 200px;
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid cyan;
+      border-radius: 10px;
+      overflow-y: auto;
+      font-size: 18px;
+    }
+    #userInput {
+      width: 80%;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      background: black;
+      color: cyan;
+      border: 1px solid cyan;
+      border-radius: 8px;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      background: transparent;
+      color: cyan;
+      border: 1px solid cyan;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: cyan;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="jarvis-hud">
+    <h1>J.A.R.V.I.S ONLINE</h1>
+    <div id="output">Awaiting your command...</div>
+    <textarea id="userInput" placeholder="Type your command or say it..."></textarea>
+    <div class="controls">
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="startListening()">🎤 Speak</button>
+      <button onclick="toggleTheme()">🌗 Toggle Mode</button>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = "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";
+    const outputDiv = document.getElementById("output");
+    const userInput = document.getElementById("userInput");
+
+    function appendMessage(role, message) {
+      const msg = document.createElement("div");
+      msg.innerHTML = `<strong>${role}:</strong> ${message}`;
+      outputDiv.appendChild(msg);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = userInput.value.trim();
+      if (!input) return;
+
+      appendMessage("You", input);
+      userInput.value = "";
+
+      const lowerInput = input.toLowerCase();
+
+      // --- Custom Voice Commands ---
+      if (lowerInput === "say hello") {
+        const reply = "Hello sir, I am Jarvis.";
+        appendMessage("Jarvis", reply);
+        speak(reply);
+        return;
+      }
+
+      if (lowerInput === "who are you") {
+        const reply = "I am Jarvis, I am made by Kshitiz Saxena.";
+        appendMessage("Jarvis", reply);
+        speak(reply);
+        return;
+      }
+
+      // --- Website Opening ---
+      if (lowerInput.startsWith("open ")) {
+        const site = lowerInput.replace("open ", "").replaceAll(" ", "").replaceAll("/", "");
+        const url = `https://${site}.com`;
+        speak("Opening " + site);
+        window.open(url, '_blank');
+        appendMessage("Jarvis", `Opening ${url}...`);
+        return;
+      }
+
+      // --- Time Command ---
+      if (lowerInput.includes("time")) {
+        const now = new Date().toLocaleTimeString();
+        appendMessage("Jarvis", `The time is ${now}`);
+        speak("The time is " + now);
+        return;
+      }
+
+      // --- AI Chat ---
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: input }],
+            temperature: 0.7,
+          }),
+        });
+
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "I couldn't understand that.";
+        appendMessage("Jarvis", reply);
+        speak(reply);
+      } catch (err) {
+        appendMessage("Jarvis", "Error processing your request.");
+        console.error(err);
+      }
+    }
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.toLowerCase().includes("male") || v.name.includes("Daniel") || v.name.includes("en-GB"));
+      utter.voice = preferredVoice || voices[0];
+      utter.rate = 1;
+      speechSynthesis.speak(utter);
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "en-IN";
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const voiceInput = event.results[0][0].transcript;
+        userInput.value = voiceInput;
+        sendMessage();
+      };
+
+      recognition.onerror = () => {
+        appendMessage("Jarvis", "Could not understand. Please try again.");
+      };
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    window.onload = () => {
+      setTimeout(() => speechSynthesis.getVoices(), 100);
+    };
+  </script>
+</body>
+</html>
