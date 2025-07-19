@@ -109,14 +109,14 @@
       const lowerInput = input.toLowerCase();
 
       // --- Custom Voice Commands ---
-      if (lowerInput === "say hello") {
+      if (lowerInput === "hello jarvis") {
         const reply = "Hello sir, I am Jarvis.";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
 
-      if (lowerInput === "say goodbye") {
+      if (lowerInput === "goodbye jarvis") {
         const reply = "goodbye sir, it was nice working with you . I am Jarvis , signing off..";
         appendMessage("Jarvis", reply);
         speak(reply);
