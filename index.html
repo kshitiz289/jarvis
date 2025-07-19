@@ -116,6 +116,13 @@
         return;
       }
 
+      if (lowerInput === "say goodbye") {
+        const reply = "goodbye sir, it was nice working with you I am Jarvis , signing off..";
+        appendMessage("Jarvis", reply);
+        speak(reply);
+        return;
+      }
+
       if (lowerInput === "who are you") {
         const reply = "I am Jarvis, I am made by Kshitiz Saxena.";
         appendMessage("Jarvis", reply);
