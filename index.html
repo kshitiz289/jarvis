@@ -109,15 +109,15 @@
       const lowerInput = input.toLowerCase();
 
       // --- Custom Voice Commands ---
-      if (lowerInput === "hello Jarvis") {
+      if (lowerInput === "say hello") {
         const reply = "Hello sir, I am Jarvis.";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
 
-      if (lowerInput === "goodbye Jarvis") {
-        const reply = "goodbye sir, it was nice working with you . I am Jarvis , signing off..";
+      if (lowerInput === "say goodbye") {
+        const reply = "goodbye sir, it was nice working with you. I am Jarvis , signing off..";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
@@ -130,6 +130,11 @@
         return;
       }
 
+      if (lowerInput == "open jarvisai"){
+        window.open("https://kshitiz289.github.io/jarvis/", '_blank')
+      }
+
+
       // --- Website Opening ---
       if (lowerInput.startsWith("open ")) {
         const site = lowerInput.replace("open ", "").replaceAll(" ", "").replaceAll("/", "");
@@ -139,6 +144,7 @@
         appendMessage("Jarvis", `Opening ${url}...`);
         return;
       }
+
 
       // --- Time Command ---
       if (lowerInput.includes("time")) {
