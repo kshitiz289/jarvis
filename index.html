@@ -109,19 +109,24 @@
       const lowerInput = input.toLowerCase();
 
       // --- Custom Voice Commands ---
-      if (lowerInput === "say hello") {
-        const reply = "Hello sir, I am Jarvis.";
+      
+
+      if (lowerInput === "what can you do?") {
+        const reply = "i can tell you time,open any website in the world,say hello and goodbye.";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
 
-      if (lowerInput === "say goodbye") {
+      if (lowerInput === "bye") {
         const reply = "goodbye sir, it was nice working with you. I am Jarvis , signing off..";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
+
+      
+
 
       if (lowerInput === "who are you") {
         const reply = "I am Jarvis, a very powerful AI that can open any website in the world,i can tell you time, i can say hello and goodbye .  I am made by Kshitiz Saxena.";
@@ -130,7 +135,16 @@
         return;
       }
 
-      if (lowerInput == "open jarvisai"){
+      if (lowerInput === "hi") {
+        const utter = new SpeechSynthesisUtterance("नमस्ते, मैं जार्विस हूं");
+        utter.lang = "hi-IN";
+        speechSynthesis.speak(utter);
+        appendMessage("Jarvis", "नमस्ते, मैं जार्विस हूं");
+        return;
+      }
+
+
+      if (lowerInput == "open yourself"){
         window.open("https://kshitiz289.github.io/jarvis/", '_blank')
       }
 
@@ -153,6 +167,23 @@
         speak("The time is " + now);
         return;
       }
+
+      // --- Date Command ---
+      if (lowerInput.includes("date")) {
+        const today = new Date();
+        const dateString = today.toLocaleDateString("en-IN", {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+
+        const reply = `Today is ${dateString}`;
+        appendMessage("Jarvis", reply);
+        speak(reply);
+        return;
+      }
+
 
       // --- AI Chat ---
       try {
@@ -188,6 +219,45 @@
       speechSynthesis.speak(utter);
     }
 
+    //set timer//
+      if (lowerInput.startsWith("set timer for")) {
+        const timeStr = lowerInput.replace("set timer for", "").trim(); // e.g., "5 minutes"
+        const timeParts = timeStr.split(" ");
+        const value = parseInt(timeParts[0]);
+        const unit = timeParts[1];
+
+        if (isNaN(value)) {
+          appendMessage("Jarvis", "Invalid time format.");
+          speak("Sorry, I couldn't understand the time.");
+          return;
+        }
+
+        let milliseconds = 0;
+        if (unit.startsWith("sec")) {
+          milliseconds = value * 1000;
+        } else if (unit.startsWith("min")) {
+          milliseconds = value * 60000;
+        } else if (unit.startsWith("hour")) {
+          milliseconds = value * 60 * 60000;
+        } else {
+          appendMessage("Jarvis", "Please specify seconds, minutes, or hours.");
+          speak("Please specify seconds, minutes, or hours.");
+          return;
+        }
+
+        speak(`Timer set for ${value} ${unit}`);
+        appendMessage("Jarvis", `Timer set for ${value} ${unit}`);
+
+        setTimeout(() => {
+          const msg = `Your timer for ${value} ${unit} is up.`;
+          appendMessage("Jarvis", msg);
+          speak(msg);
+        }, milliseconds);
+
+        return;
+      }
+
+      
     function startListening() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "en-IN";
