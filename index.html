@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>J.A.R.V.I.S AI</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
@@ -18,7 +18,6 @@
       background: #000;
       color: #00ffff;
     }
-
     .jarvis-hud {
       display: flex;
       flex-direction: column;
@@ -26,19 +25,16 @@
       padding: 40px;
       text-align: center;
     }
-
     h1 {
       font-size: 48px;
       color: #00ffff;
       text-shadow: 0 0 10px #00ffff;
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
       0% { text-shadow: 0 0 5px #00ffff; }
       100% { text-shadow: 0 0 20px #00ffff; }
     }
-
     #output {
       width: 80%;
       height: 200px;
@@ -51,7 +47,6 @@
       font-size: 18px;
       scroll-behavior: smooth;
     }
-
     #userInput {
       width: 80%;
       margin-top: 20px;
@@ -62,11 +57,9 @@
       border: 1px solid cyan;
       border-radius: 8px;
     }
-
     .controls {
       margin-top: 20px;
     }
-
     .controls button {
       background: transparent;
       color: cyan;
@@ -77,30 +70,23 @@
       font-size: 16px;
       cursor: pointer;
     }
-
     .controls button:hover {
       background-color: cyan;
       color: black;
     }
-
-    /* Chrome-based scrollbar styling */
     #output::-webkit-scrollbar {
       width: 10px;
     }
-
     #output::-webkit-scrollbar-track {
       background: rgba(0, 255, 255, 0.1);
     }
-
     #output::-webkit-scrollbar-thumb {
       background-color: cyan;
       border-radius: 10px;
     }
-
     .dark-mode #output::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.05);
     }
-
     .dark-mode #output::-webkit-scrollbar-thumb {
       background-color: #00ffff;
     }
@@ -119,9 +105,26 @@
   </div>
 
   <script>
-    const API_KEY = "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";
     const outputDiv = document.getElementById("output");
     const userInput = document.getElementById("userInput");
+
+    function typeText(role, text, delay = 40) {
+      const msg = document.createElement("div");
+      msg.innerHTML = `<strong>${role}:</strong> <span></span>`;
+      outputDiv.appendChild(msg);
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          msg.querySelector("span").textContent += text.charAt(i);
+          i++;
+          outputDiv.scrollTop = outputDiv.scrollHeight;
+        } else {
+          clearInterval(interval);
+        }
+      }, delay);
+    }
 
     function appendMessage(role, message) {
       const msg = document.createElement("div");
@@ -130,7 +133,7 @@
       outputDiv.scrollTop = outputDiv.scrollHeight;
     }
 
-    async function sendMessage() {
+    function sendMessage() {
       const input = userInput.value.trim();
       if (!input) return;
 
@@ -139,30 +142,69 @@
 
       const lowerInput = input.toLowerCase();
 
+      // --- Timer Handler FIRST to avoid 'time' interference ---
+      if (lowerInput.startsWith("set timer for")) {
+        const timeStr = lowerInput.replace("set timer for", "").trim();
+        const parts = timeStr.split(" ");
+        const value = parseInt(parts[0]);
+        const unit = parts[1];
+
+        if (isNaN(value) || !["sec", "min", "hour"].includes(unit)) {
+          const msg = "Please type like: 'set timer for 10 sec', '2 min', or '1 hour'";
+          typeText("Jarvis", msg);
+          speak(msg);
+          return;
+        }
+
+        let milliseconds = 0;
+        if (unit === "sec") milliseconds = value * 1000;
+        if (unit === "min") milliseconds = value * 60 * 1000;
+        if (unit === "hour") milliseconds = value * 60 * 60 * 1000;
+
+        const reply = `Timer set for ${value} ${unit}`;
+        typeText("Jarvis", reply);
+        speak(reply);
+
+        setTimeout(() => {
+          const doneMsg = `Time's up! Your ${value} ${unit} timer ended.`;
+          typeText("Jarvis", doneMsg);
+          speak(doneMsg);
+        }, milliseconds);
+        return;
+      }
+
+      // --- Other Command Handlers ---
       if (lowerInput === "what can you do?") {
-        const reply = "I can tell you time, open any website in the world, say hello and goodbye.";
-        appendMessage("Jarvis", reply);
+        const reply = "I can tell you time, date, open any websites in the world, search online, set timers, and more. Use short forms like 'sec', 'min', 'hour' for timers.";
+        typeText("Jarvis", reply);
         speak(reply);
         return;
       }
 
       if (lowerInput === "bye") {
-        const reply = "बाई सर,आपसे मिलकर अच्छा लगा,मीट यू नेक्स्ट टाइम..";
-        appendMessage("Jarvis", reply);
+        const reply = "बाई सर, आपसे मिलकर अच्छा लगा, मीट यू नेक्स्ट टाइम.";
+        typeText("Jarvis", reply);
         speak(reply, "hi-IN");
         return;
       }
 
+      if (lowerInput === "give command list") {
+        const reply = "1. hi , 2. bye , 3. who are you , 4. time , 5. date , 6. set timer (example: set timer for 5 sec) , 7. open website (example: open amazon) , 8. search for anything (example: search iron man).";
+        typeText("Jarvis", reply);
+        speak(reply);
+        return;
+      }
+
       if (lowerInput === "who are you") {
-        const reply = "I am Jarvis, a powerful AI made by Kshitiz Saxena. I can open any website, tell time, greet you and more.";
-        appendMessage("Jarvis", reply);
+        const reply = "I am Jarvis, a powerful AI made by Kshitiz Saxena.";
+        typeText("Jarvis", reply);
         speak(reply);
         return;
       }
 
       if (lowerInput === "hi") {
         const reply = "नमस्ते, मैं जार्विस हूं";
-        appendMessage("Jarvis", reply);
+        typeText("Jarvis", reply);
         speak(reply, "hi-IN");
         return;
       }
@@ -177,14 +219,15 @@
         const url = `https://${site}.com`;
         speak("Opening " + site);
         window.open(url, "_blank");
-        appendMessage("Jarvis", `Opening ${url}...`);
+        typeText("Jarvis", `Opening ${url}...`);
         return;
       }
 
       if (lowerInput.includes("time")) {
         const now = new Date().toLocaleTimeString();
-        appendMessage("Jarvis", `The time is ${now}`);
-        speak("The time is " + now);
+        const reply = `The time is ${now}`;
+        typeText("Jarvis", reply);
+        speak(reply);
         return;
       }
 
@@ -197,67 +240,23 @@
           day: 'numeric'
         });
         const reply = `Today is ${dateString}`;
-        appendMessage("Jarvis", reply);
+        typeText("Jarvis", reply);
         speak(reply);
         return;
       }
 
-      if (lowerInput.startsWith("set timer for")) {
-        const timeStr = lowerInput.replace("set timer for", "").trim();
-        const timeParts = timeStr.split(" ");
-        const value = parseInt(timeParts[0]);
-        const unit = timeParts[1];
-
-        if (isNaN(value)) {
-          appendMessage("Jarvis", "Invalid time format.");
-          speak("Sorry, I couldn't understand the time.");
-          return;
-        }
-
-        let milliseconds = 0;
-        if (unit.startsWith("sec")) milliseconds = value * 1000;
-        else if (unit.startsWith("min")) milliseconds = value * 60000;
-        else if (unit.startsWith("hour")) milliseconds = value * 60 * 60000;
-        else {
-          appendMessage("Jarvis", "Please specify seconds, minutes, or hours.");
-          speak("Please specify seconds, minutes, or hours.");
-          return;
-        }
-
-        speak(`Timer set for ${value} ${unit}`);
-        appendMessage("Jarvis", `Timer set for ${value} ${unit}`);
-
-        setTimeout(() => {
-          const msg = `Your timer for ${value} ${unit} is up.`;
-          appendMessage("Jarvis", msg);
-          speak(msg);
-        }, milliseconds);
+      if (lowerInput.startsWith("search ")) {
+        const query = lowerInput.replace("search ", "").trim();
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        typeText("Jarvis", `Searching for "${query}"...`);
+        speak(`Searching for ${query}`);
+        window.open(searchUrl, "_blank");
         return;
       }
 
-      // Fallback: Use AI chat
-      try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: input }],
-            temperature: 0.7,
-          }),
-        });
-
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "I couldn't understand that.";
-        appendMessage("Jarvis", reply);
-        speak(reply);
-      } catch (err) {
-        appendMessage("Jarvis", "Error processing your request.");
-        console.error(err);
-      }
+      const fallback = "Sorry, I didn't understand that.";
+      typeText("Jarvis", fallback);
+      speak(fallback);
     }
 
     function speak(text, lang = "en-GB") {
@@ -280,7 +279,7 @@
       };
 
       recognition.onerror = () => {
-        appendMessage("Jarvis", "Could not understand. Please try again.");
+        typeText("Jarvis", "Could not understand. Please try again.");
       };
     }
 
