@@ -18,6 +18,7 @@
       background: #000;
       color: #00ffff;
     }
+
     .jarvis-hud {
       display: flex;
       flex-direction: column;
@@ -25,19 +26,22 @@
       padding: 40px;
       text-align: center;
     }
+
     h1 {
       font-size: 48px;
       color: #00ffff;
       text-shadow: 0 0 10px #00ffff;
       animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
       0% { text-shadow: 0 0 5px #00ffff; }
       100% { text-shadow: 0 0 20px #00ffff; }
     }
+
     #output {
       width: 80%;
-      min-height: 200px;
+      height: 200px;
       margin-top: 20px;
       padding: 20px;
       background: rgba(0, 255, 255, 0.1);
@@ -45,7 +49,9 @@
       border-radius: 10px;
       overflow-y: auto;
       font-size: 18px;
+      scroll-behavior: smooth;
     }
+
     #userInput {
       width: 80%;
       margin-top: 20px;
@@ -56,9 +62,11 @@
       border: 1px solid cyan;
       border-radius: 8px;
     }
+
     .controls {
       margin-top: 20px;
     }
+
     .controls button {
       background: transparent;
       color: cyan;
@@ -69,9 +77,32 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     .controls button:hover {
       background-color: cyan;
       color: black;
+    }
+
+    /* Chrome-based scrollbar styling */
+    #output::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    #output::-webkit-scrollbar-track {
+      background: rgba(0, 255, 255, 0.1);
+    }
+
+    #output::-webkit-scrollbar-thumb {
+      background-color: cyan;
+      border-radius: 10px;
+    }
+
+    .dark-mode #output::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .dark-mode #output::-webkit-scrollbar-thumb {
+      background-color: #00ffff;
     }
   </style>
 </head>
@@ -108,59 +139,48 @@
 
       const lowerInput = input.toLowerCase();
 
-      // --- Custom Voice Commands ---
-      
-
       if (lowerInput === "what can you do?") {
-        const reply = "i can tell you time,open any website in the world,say hello and goodbye.";
+        const reply = "I can tell you time, open any website in the world, say hello and goodbye.";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
 
       if (lowerInput === "bye") {
-        const reply = "goodbye sir, it was nice working with you. I am Jarvis , signing off..";
+        const reply = "बाई सर,आपसे मिलकर अच्छा लगा,मीट यू नेक्स्ट टाइम..";
         appendMessage("Jarvis", reply);
-        speak(reply);
+        speak(reply, "hi-IN");
         return;
       }
 
-      
-
-
       if (lowerInput === "who are you") {
-        const reply = "I am Jarvis, a very powerful AI that can open any website in the world,i can tell you time, i can say hello and goodbye .  I am made by Kshitiz Saxena.";
+        const reply = "I am Jarvis, a powerful AI made by Kshitiz Saxena. I can open any website, tell time, greet you and more.";
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
 
       if (lowerInput === "hi") {
-        const utter = new SpeechSynthesisUtterance("नमस्ते, मैं जार्विस हूं");
-        utter.lang = "hi-IN";
-        speechSynthesis.speak(utter);
-        appendMessage("Jarvis", "नमस्ते, मैं जार्विस हूं");
+        const reply = "नमस्ते, मैं जार्विस हूं";
+        appendMessage("Jarvis", reply);
+        speak(reply, "hi-IN");
         return;
       }
 
-
-      if (lowerInput == "open yourself"){
-        window.open("https://kshitiz289.github.io/jarvis/", '_blank')
+      if (lowerInput === "open yourself") {
+        window.open("https://kshitiz289.github.io/jarvis/", "_blank");
+        return;
       }
 
-
-      // --- Website Opening ---
       if (lowerInput.startsWith("open ")) {
         const site = lowerInput.replace("open ", "").replaceAll(" ", "").replaceAll("/", "");
         const url = `https://${site}.com`;
         speak("Opening " + site);
-        window.open(url, '_blank');
+        window.open(url, "_blank");
         appendMessage("Jarvis", `Opening ${url}...`);
         return;
       }
 
-
-      // --- Time Command ---
       if (lowerInput.includes("time")) {
         const now = new Date().toLocaleTimeString();
         appendMessage("Jarvis", `The time is ${now}`);
@@ -168,7 +188,6 @@
         return;
       }
 
-      // --- Date Command ---
       if (lowerInput.includes("date")) {
         const today = new Date();
         const dateString = today.toLocaleDateString("en-IN", {
@@ -177,15 +196,46 @@
           month: 'long',
           day: 'numeric'
         });
-
         const reply = `Today is ${dateString}`;
         appendMessage("Jarvis", reply);
         speak(reply);
         return;
       }
 
+      if (lowerInput.startsWith("set timer for")) {
+        const timeStr = lowerInput.replace("set timer for", "").trim();
+        const timeParts = timeStr.split(" ");
+        const value = parseInt(timeParts[0]);
+        const unit = timeParts[1];
 
-      // --- AI Chat ---
+        if (isNaN(value)) {
+          appendMessage("Jarvis", "Invalid time format.");
+          speak("Sorry, I couldn't understand the time.");
+          return;
+        }
+
+        let milliseconds = 0;
+        if (unit.startsWith("sec")) milliseconds = value * 1000;
+        else if (unit.startsWith("min")) milliseconds = value * 60000;
+        else if (unit.startsWith("hour")) milliseconds = value * 60 * 60000;
+        else {
+          appendMessage("Jarvis", "Please specify seconds, minutes, or hours.");
+          speak("Please specify seconds, minutes, or hours.");
+          return;
+        }
+
+        speak(`Timer set for ${value} ${unit}`);
+        appendMessage("Jarvis", `Timer set for ${value} ${unit}`);
+
+        setTimeout(() => {
+          const msg = `Your timer for ${value} ${unit} is up.`;
+          appendMessage("Jarvis", msg);
+          speak(msg);
+        }, milliseconds);
+        return;
+      }
+
+      // Fallback: Use AI chat
       try {
         const res = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
@@ -210,54 +260,14 @@
       }
     }
 
-    function speak(text) {
+    function speak(text, lang = "en-GB") {
       const utter = new SpeechSynthesisUtterance(text);
-      const voices = speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.name.toLowerCase().includes("male") || v.name.includes("Daniel") || v.name.includes("en-GB"));
-      utter.voice = preferredVoice || voices[0];
+      utter.lang = lang;
+      utter.voice = speechSynthesis.getVoices().find(v => v.lang === lang) || null;
       utter.rate = 1;
       speechSynthesis.speak(utter);
     }
 
-    //set timer//
-      if (lowerInput.startsWith("set timer for")) {
-        const timeStr = lowerInput.replace("set timer for", "").trim(); // e.g., "5 minutes"
-        const timeParts = timeStr.split(" ");
-        const value = parseInt(timeParts[0]);
-        const unit = timeParts[1];
-
-        if (isNaN(value)) {
-          appendMessage("Jarvis", "Invalid time format.");
-          speak("Sorry, I couldn't understand the time.");
-          return;
-        }
-
-        let milliseconds = 0;
-        if (unit.startsWith("sec")) {
-          milliseconds = value * 1000;
-        } else if (unit.startsWith("min")) {
-          milliseconds = value * 60000;
-        } else if (unit.startsWith("hour")) {
-          milliseconds = value * 60 * 60000;
-        } else {
-          appendMessage("Jarvis", "Please specify seconds, minutes, or hours.");
-          speak("Please specify seconds, minutes, or hours.");
-          return;
-        }
-
-        speak(`Timer set for ${value} ${unit}`);
-        appendMessage("Jarvis", `Timer set for ${value} ${unit}`);
-
-        setTimeout(() => {
-          const msg = `Your timer for ${value} ${unit} is up.`;
-          appendMessage("Jarvis", msg);
-          speak(msg);
-        }, milliseconds);
-
-        return;
-      }
-
-      
     function startListening() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "en-IN";
