@@ -90,6 +90,7 @@ const outputDiv = document.getElementById("output");
 
       if (lowerInput.startsWith("say ")){
         const reply = lowerInput.replace("say ", "").replaceAll(" ", "").replaceAll("/", "");
+        
         typeText("Jarvis", reply);
         speak(reply);
         return;
@@ -112,6 +113,8 @@ const outputDiv = document.getElementById("output");
 
       if (lowerInput === "open yourself") {
         window.open("https://kshitiz289.github.io/jarvis/", "_blank");
+        typeText("Jarvis",'Opening myself..')
+        speak("Opening myself")
         return;
       }
 
