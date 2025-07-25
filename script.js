@@ -88,6 +88,15 @@ const outputDiv = document.getElementById("output");
         return;
       }
 
+      if (lowerInput.startsWith("say ")){
+        const reply = lowerInput.replace("say ", "").replaceAll(" ", "").replaceAll("/", "");
+        
+        typeText("Jarvis", reply);
+        speak(reply);
+        return;
+      }
+
+
       if (lowerInput === "who are you") {
         const reply = "I am Jarvis, a powerful AI made by Kshitiz Saxena.";
         typeText("Jarvis", reply);
