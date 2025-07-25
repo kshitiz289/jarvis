@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+      color: cyan;
+      overflow: hidden;
+      transition: background 0.5s, color 0.5s;
+    }
+    .dark-mode {
+      background: #000;
+      color: #00ffff;
+    }
+    .jarvis-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 48px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { text-shadow: 0 0 5px #00ffff; }
+      100% { text-shadow: 0 0 20px #00ffff; }
+    }
+    #output {
+      width: 80%;
+      height: 200px;
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid cyan;
+      border-radius: 10px;
+      overflow-y: auto;
+      font-size: 18px;
+      scroll-behavior: smooth;
+    }
+    #userInput {
+      width: 80%;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      background: black;
+      color: cyan;
+      border: 1px solid cyan;
+      border-radius: 8px;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      background: transparent;
+      color: cyan;
+      border: 1px solid cyan;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: cyan;
+      color: black;
+    }
+    #output::-webkit-scrollbar {
+      width: 10px;
+    }
+    #output::-webkit-scrollbar-track {
+      background: rgba(0, 255, 255, 0.1);
+    }
+    #output::-webkit-scrollbar-thumb {
+      background-color: cyan;
+      border-radius: 10px;
+    }
+    .dark-mode #output::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .dark-mode #output::-webkit-scrollbar-thumb {
+      background-color: #00ffff;
+    }
