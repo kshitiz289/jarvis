@@ -90,7 +90,6 @@ const outputDiv = document.getElementById("output");
 
       if (lowerInput.startsWith("say ")){
         const reply = lowerInput.replace("say ", "").replaceAll(" ", "").replaceAll("/", "");
-        
         typeText("Jarvis", reply);
         speak(reply);
         return;
