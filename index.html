@@ -1,1 +1,23 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="jarvis-hud">
+    <h1>J.A.R.V.I.S ONLINE</h1>
+    <div id="output">Awaiting your command...</div>
+    <textarea id="userInput" placeholder="Type your command or say it..."></textarea>
+    <div class="controls">
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="startListening()">🎤 Speak</button>
+      <button onclick="toggleTheme()">🌗 Toggle Mode</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+  
+</body>
+</html>
